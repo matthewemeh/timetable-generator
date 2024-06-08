@@ -1,0 +1,37 @@
+{
+    "compilerOptions": {
+        /* Visit https://aka.ms/tsconfig.json to read more about this file */
+
+        /* Language and Environment */
+        "jsx": "preserve",
+        "target": "ES2022",
+
+        /* Modules */
+        "rootDir": "./src",
+        "module": "ES2022",
+
+        /* Emit */
+        "outDir": "./dist",
+        "noEmit": false,
+        "newLine": "crlf",
+        "noEmitOnError": false,
+        "removeComments": true,
+        // "preserveConstEnums": true,                       /* Disable erasing `const enum` declarations in generated code. */
+
+        /* Interop Constraints */
+        "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
+
+        /* Type Checking */
+        "strict": true,
+        "noImplicitThis": false,
+        "noImplicitReturns": true,
+        "noImplicitOverride": true,
+        "noUnusedParameters": true,
+        "allowUnusedLabels": false,
+        "allowUnreachableCode": false,
+        "exactOptionalPropertyTypes": true,
+        "noFallthroughCasesInSwitch": true,
+        "strictPropertyInitialization": true,
+        "noPropertyAccessFromIndexSignature": true
+    }
+}

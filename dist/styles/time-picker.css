@@ -1,0 +1,584 @@
+.picker {
+    top: 50%;
+    left: 50%;
+    position: fixed;
+    z-index: 10001;
+    box-shadow: black 0 0 0.2em;
+    transform: translate(-50%, -50%);
+}
+
+body:not(.dark) .picker {
+    font-size: 0.8em;
+    background: #f2f2f2;
+    width: 15em;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    color: #909090;
+}
+
+body:not(.dark) .picker .time-wrap {
+    background: #fff;
+    padding: 1em;
+    height: 3em;
+    text-align: right;
+    box-sizing: content-box !important;
+    -moz-box-sizing: content-box !important;
+    -webkit-box-sizing: content-box !important;
+}
+
+body:not(.dark) .picker .time-wrap .active {
+    color: var(--theme-1);
+}
+
+body:not(.dark) .picker .time-wrap .time {
+    font-size: 3em;
+    line-height: 1em;
+}
+
+body:not(.dark) .picker .time-wrap .time .part {
+    cursor: pointer;
+}
+
+body:not(.dark) .picker .time-wrap .time .am-pm {
+    font-size: 0.3333333333em;
+}
+
+body:not(.dark) .picker .face-wrap {
+    padding: 1em;
+}
+
+body:not(.dark) .picker .face-wrap .face {
+    position: relative;
+    background: #fff;
+    height: 13em;
+    border-radius: 50%;
+    cursor: move;
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .face-number {
+    position: absolute;
+    transition: transform 0.5s cubic-bezier(0.47, 0.02, 0.74, 1.81), opacity 0.4s;
+    text-align: center;
+    pointer-events: none;
+    width: 100%;
+    top: 6em;
+    line-height: 1em;
+    height: 1em;
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .face-number[data-css-time='0'] {
+    transform: rotate(0deg) translateY(-5.5em) rotate(0deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .face-number[data-css-time='1'] {
+    transform: rotate(30deg) translateY(-5.5em) rotate(-30deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .face-number[data-css-time='2'] {
+    transform: rotate(60deg) translateY(-5.5em) rotate(-60deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .face-number[data-css-time='3'] {
+    transform: rotate(90deg) translateY(-5.5em) rotate(-90deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .face-number[data-css-time='4'] {
+    transform: rotate(120deg) translateY(-5.5em) rotate(-120deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .face-number[data-css-time='5'] {
+    transform: rotate(150deg) translateY(-5.5em) rotate(-150deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .face-number[data-css-time='6'] {
+    transform: rotate(180deg) translateY(-5.5em) rotate(-180deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .face-number[data-css-time='7'] {
+    transform: rotate(210deg) translateY(-5.5em) rotate(-210deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .face-number[data-css-time='8'] {
+    transform: rotate(240deg) translateY(-5.5em) rotate(-240deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .face-number[data-css-time='9'] {
+    transform: rotate(270deg) translateY(-5.5em) rotate(-270deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .face-number[data-css-time='10'] {
+    transform: rotate(300deg) translateY(-5.5em) rotate(-300deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .face-number[data-css-time='11'] {
+    transform: rotate(330deg) translateY(-5.5em) rotate(-330deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .handle {
+    transition: opacity 0.4s;
+    height: 1.65em;
+    width: 1.65em;
+    top: 5.675em;
+    left: 5.675em;
+    position: absolute;
+    /* background: rgba(0, 153, 204, 0.5); */
+    border-radius: 50%;
+    background: rgb(114, 42, 204, 0.3);
+    transform: rotate(300deg) translateY(-5.5em);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .handle.anim {
+    transition: transform 0.5s cubic-bezier(0.47, 0.02, 0.74, 1.81), opacity 0.4s;
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .handle-spot {
+    height: 0.5em;
+    width: 0.5em;
+    top: 0.575em;
+    left: 0.575em;
+    position: absolute;
+    background: var(--theme-1);
+    border-radius: 50%;
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .handle-bar {
+    transition: opacity 0.4s;
+    transform-origin: bottom;
+    position: absolute;
+    bottom: 6.5em;
+    background: var(--theme-1);
+    width: 1px;
+    height: 1em;
+    left: 6.5em;
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set .handle-bar.anim {
+    transition: transform 0.5s cubic-bezier(0.47, 0.02, 0.74, 1.81), opacity 0.4s;
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off .face-number {
+    opacity: 0;
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off .handle,
+body:not(.dark) .picker .face-wrap .face .face-set.face-off .handle-bar {
+    opacity: 0;
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='0'] {
+    transform: rotate(0deg) translateY(-7em) rotate(0deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='1'] {
+    transform: rotate(30deg) translateY(-7em) rotate(-30deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='2'] {
+    transform: rotate(60deg) translateY(-7em) rotate(-60deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='3'] {
+    transform: rotate(90deg) translateY(-7em) rotate(-90deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='4'] {
+    transform: rotate(120deg) translateY(-7em) rotate(-120deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='5'] {
+    transform: rotate(150deg) translateY(-7em) rotate(-150deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='6'] {
+    transform: rotate(180deg) translateY(-7em) rotate(-180deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='7'] {
+    transform: rotate(210deg) translateY(-7em) rotate(-210deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='8'] {
+    transform: rotate(240deg) translateY(-7em) rotate(-240deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='9'] {
+    transform: rotate(270deg) translateY(-7em) rotate(-270deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='10'] {
+    transform: rotate(300deg) translateY(-7em) rotate(-300deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='11'] {
+    transform: rotate(330deg) translateY(-7em) rotate(-330deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='0'] {
+    transform: rotate(0deg) translateY(-4em) rotate(0deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='1'] {
+    transform: rotate(30deg) translateY(-4em) rotate(-30deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='2'] {
+    transform: rotate(60deg) translateY(-4em) rotate(-60deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='3'] {
+    transform: rotate(90deg) translateY(-4em) rotate(-90deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='4'] {
+    transform: rotate(120deg) translateY(-4em) rotate(-120deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='5'] {
+    transform: rotate(150deg) translateY(-4em) rotate(-150deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='6'] {
+    transform: rotate(180deg) translateY(-4em) rotate(-180deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='7'] {
+    transform: rotate(210deg) translateY(-4em) rotate(-210deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='8'] {
+    transform: rotate(240deg) translateY(-4em) rotate(-240deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='9'] {
+    transform: rotate(270deg) translateY(-4em) rotate(-270deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='10'] {
+    transform: rotate(300deg) translateY(-4em) rotate(-300deg);
+}
+
+body:not(.dark) .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='11'] {
+    transform: rotate(330deg) translateY(-4em) rotate(-330deg);
+}
+
+body:not(.dark) .picker .am-pm-btns {
+    margin-top: -1.825em;
+    padding: 1em;
+    padding-top: 0;
+    height: 1.65em;
+    text-align: center;
+}
+
+body:not(.dark) .picker .am-pm-btns .am-pm-btn {
+    display: inline-block;
+    height: 1.65em;
+    width: 1.65em;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+body:not(.dark) .picker .am-pm-btns .am-pm-btn.am {
+    float: left;
+}
+
+body:not(.dark) .picker .am-pm-btns .am-pm-btn.pm {
+    float: right;
+}
+
+body:not(.dark) .picker .am-pm-btns .am-pm-btn.active {
+    background: var(--theme-1);
+    color: #fff;
+    /* background: #80cce6; */
+}
+
+body.dark {
+    background: #0b0c0e;
+}
+
+body.dark .info {
+    color: #fff;
+}
+
+body.dark .picker {
+    font-size: 0.8em;
+    background: #404040;
+    width: 15em;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    color: #fff;
+}
+
+body.dark .picker .time-wrap {
+    background: #363636;
+    padding: 1em;
+    height: 3em;
+    text-align: right;
+}
+
+body.dark .picker .time-wrap .active {
+    color: #ff4444;
+}
+
+body.dark .picker .time-wrap .time {
+    font-size: 3em;
+    line-height: 1em;
+}
+
+body.dark .picker .time-wrap .time .part {
+    cursor: pointer;
+}
+
+body.dark .picker .time-wrap .time .am-pm {
+    font-size: 0.3333333333em;
+}
+
+body.dark .picker .face-wrap {
+    padding: 1em;
+}
+
+body.dark .picker .face-wrap .face {
+    position: relative;
+    background: #363636;
+    height: 13em;
+    border-radius: 50%;
+    cursor: move;
+}
+
+body.dark .picker .face-wrap .face .face-set .face-number {
+    position: absolute;
+    transition: transform 0.5s cubic-bezier(0.47, 0.02, 0.74, 1.81), opacity 0.4s;
+    text-align: center;
+    pointer-events: none;
+    width: 100%;
+    top: 6em;
+    line-height: 1em;
+    height: 1em;
+}
+
+body.dark .picker .face-wrap .face .face-set .face-number[data-css-time='0'] {
+    transform: rotate(0deg) translateY(-5.5em) rotate(0deg);
+}
+
+body.dark .picker .face-wrap .face .face-set .face-number[data-css-time='1'] {
+    transform: rotate(30deg) translateY(-5.5em) rotate(-30deg);
+}
+
+body.dark .picker .face-wrap .face .face-set .face-number[data-css-time='2'] {
+    transform: rotate(60deg) translateY(-5.5em) rotate(-60deg);
+}
+
+body.dark .picker .face-wrap .face .face-set .face-number[data-css-time='3'] {
+    transform: rotate(90deg) translateY(-5.5em) rotate(-90deg);
+}
+
+body.dark .picker .face-wrap .face .face-set .face-number[data-css-time='4'] {
+    transform: rotate(120deg) translateY(-5.5em) rotate(-120deg);
+}
+
+body.dark .picker .face-wrap .face .face-set .face-number[data-css-time='5'] {
+    transform: rotate(150deg) translateY(-5.5em) rotate(-150deg);
+}
+
+body.dark .picker .face-wrap .face .face-set .face-number[data-css-time='6'] {
+    transform: rotate(180deg) translateY(-5.5em) rotate(-180deg);
+}
+
+body.dark .picker .face-wrap .face .face-set .face-number[data-css-time='7'] {
+    transform: rotate(210deg) translateY(-5.5em) rotate(-210deg);
+}
+
+body.dark .picker .face-wrap .face .face-set .face-number[data-css-time='8'] {
+    transform: rotate(240deg) translateY(-5.5em) rotate(-240deg);
+}
+
+body.dark .picker .face-wrap .face .face-set .face-number[data-css-time='9'] {
+    transform: rotate(270deg) translateY(-5.5em) rotate(-270deg);
+}
+
+body.dark .picker .face-wrap .face .face-set .face-number[data-css-time='10'] {
+    transform: rotate(300deg) translateY(-5.5em) rotate(-300deg);
+}
+
+body.dark .picker .face-wrap .face .face-set .face-number[data-css-time='11'] {
+    transform: rotate(330deg) translateY(-5.5em) rotate(-330deg);
+}
+
+body.dark .picker .face-wrap .face .face-set .handle {
+    transition: opacity 0.4s;
+    height: 1.65em;
+    width: 1.65em;
+    top: 5.675em;
+    left: 5.675em;
+    position: absolute;
+    background: rgba(104, 0, 0, 0.5);
+    border-radius: 50%;
+    transform: rotate(300deg) translateY(-5.5em);
+}
+
+body.dark .picker .face-wrap .face .face-set .handle.anim {
+    transition: transform 0.5s cubic-bezier(0.47, 0.02, 0.74, 1.81), opacity 0.4s;
+}
+
+body.dark .picker .face-wrap .face .face-set .handle-spot {
+    height: 0.5em;
+    width: 0.5em;
+    top: 0.575em;
+    left: 0.575em;
+    position: absolute;
+    background: #ff4444;
+    border-radius: 50%;
+}
+
+body.dark .picker .face-wrap .face .face-set .handle-bar {
+    transition: opacity 0.4s;
+    transform-origin: bottom;
+    position: absolute;
+    bottom: 6.5em;
+    background: #ff4444;
+    width: 1px;
+    height: 1em;
+    left: 6.5em;
+}
+
+body.dark .picker .face-wrap .face .face-set .handle-bar.anim {
+    transition: transform 0.5s cubic-bezier(0.47, 0.02, 0.74, 1.81), opacity 0.4s;
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off .face-number {
+    opacity: 0;
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off .handle,
+body.dark .picker .face-wrap .face .face-set.face-off .handle-bar {
+    opacity: 0;
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='0'] {
+    transform: rotate(0deg) translateY(-7em) rotate(0deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='1'] {
+    transform: rotate(30deg) translateY(-7em) rotate(-30deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='2'] {
+    transform: rotate(60deg) translateY(-7em) rotate(-60deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='3'] {
+    transform: rotate(90deg) translateY(-7em) rotate(-90deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='4'] {
+    transform: rotate(120deg) translateY(-7em) rotate(-120deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='5'] {
+    transform: rotate(150deg) translateY(-7em) rotate(-150deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='6'] {
+    transform: rotate(180deg) translateY(-7em) rotate(-180deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='7'] {
+    transform: rotate(210deg) translateY(-7em) rotate(-210deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='8'] {
+    transform: rotate(240deg) translateY(-7em) rotate(-240deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='9'] {
+    transform: rotate(270deg) translateY(-7em) rotate(-270deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='10'] {
+    transform: rotate(300deg) translateY(-7em) rotate(-300deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.min .face-number[data-css-time='11'] {
+    transform: rotate(330deg) translateY(-7em) rotate(-330deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='0'] {
+    transform: rotate(0deg) translateY(-4em) rotate(0deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='1'] {
+    transform: rotate(30deg) translateY(-4em) rotate(-30deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='2'] {
+    transform: rotate(60deg) translateY(-4em) rotate(-60deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='3'] {
+    transform: rotate(90deg) translateY(-4em) rotate(-90deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='4'] {
+    transform: rotate(120deg) translateY(-4em) rotate(-120deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='5'] {
+    transform: rotate(150deg) translateY(-4em) rotate(-150deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='6'] {
+    transform: rotate(180deg) translateY(-4em) rotate(-180deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='7'] {
+    transform: rotate(210deg) translateY(-4em) rotate(-210deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='8'] {
+    transform: rotate(240deg) translateY(-4em) rotate(-240deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='9'] {
+    transform: rotate(270deg) translateY(-4em) rotate(-270deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='10'] {
+    transform: rotate(300deg) translateY(-4em) rotate(-300deg);
+}
+
+body.dark .picker .face-wrap .face .face-set.face-off.hour .face-number[data-css-time='11'] {
+    transform: rotate(330deg) translateY(-4em) rotate(-330deg);
+}
+
+body.dark .picker .am-pm-btns {
+    margin-top: -1.825em;
+    padding: 1em;
+    padding-top: 0;
+    height: 1.65em;
+    text-align: center;
+}
+
+body.dark .picker .am-pm-btns .am-pm-btn {
+    display: inline-block;
+    height: 1.65em;
+    width: 1.65em;
+    background: #363636;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+body.dark .picker .am-pm-btns .am-pm-btn.am {
+    float: left;
+}
+
+body.dark .picker .am-pm-btns .am-pm-btn.pm {
+    float: right;
+}
+
+body.dark .picker .am-pm-btns .am-pm-btn.active {
+    background: #4f1b1b;
+}
