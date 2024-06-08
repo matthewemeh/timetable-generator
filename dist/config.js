@@ -24,6 +24,7 @@ const IDs = {
     INFO_TILE: 'info-tile',
     TIMETABLE: 'timetable',
     TODAY_TEXT: 'today-text',
+    COURSE_NAME: 'course-name',
     COURSE_LIST: 'course-list',
     NEW_END_TIME: 'new-end-time',
     EMPTY_COURSES: 'empty-courses',

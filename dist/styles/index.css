@@ -255,11 +255,35 @@ input[type='text']:focus {
 }
 
 #course-color-config.modal {
-    width: 100px;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 200px;
+    height: 70px;
+    padding: 10px;
+    display: grid;
+    column-gap: 5px;
+    box-sizing: content-box;
+    grid-template-columns: 1fr 1fr;
+}
+
+#course-theme-title {
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    grid-column-end: 3;
+    grid-column-start: 1;
+}
+
+#course-name:empty {
+    display: none;
+}
+
+#course-name:empty ~ #course-color {
+    margin: auto;
+    grid-column-end: 3;
+    grid-column-start: 1;
+}
+
+#course-name {
+    text-align: right;
 }
 
 .settings-label {

@@ -11,6 +11,7 @@ const {
     TIMETABLE,
     INFO_TILE,
     TODAY_TEXT,
+    COURSE_NAME,
     COURSE_LIST,
     NEW_END_TIME,
     EMPTY_COURSES,
@@ -256,6 +257,8 @@ function reloadCourses() {
         };
         const courseColor: string = uuid || !lastCourseTheme ? theme : lastCourseTheme;
         const handleColorChange = () => {
+            const courseName = document.getElementById(COURSE_NAME) as HTMLParagraphElement;
+            courseName.innerText = title;
             const colorPicker = document.getElementById(COURSE_COLOR_INPUT) as HTMLInputElement;
             colorPicker.value = courseColor;
             colorPicker.onchange = (e: Event) => {
@@ -498,7 +501,7 @@ function generateTimetable() {
         let tableRow: TableRow = { courseUuids: [], dayOfWeek };
         const newPool: (string | null)[] = pool<string>(
             courses.map(({ uuid }) => uuid),
-            20,
+            courses.length * 10,
             true
         );
 
