@@ -16,7 +16,9 @@ const {
     EMPTY_COURSES,
     NEW_START_TIME,
     SETTINGS_CONFIG,
-    COURSE_DURATION
+    COURSE_DURATION,
+    COURSE_COLOR_INPUT,
+    COURSE_COLOR_CONFIG
 } = IDs;
 
 const {
@@ -253,6 +255,31 @@ function reloadCourses() {
             theme: getRndColor()
         };
         const courseColor: string = uuid || !lastCourseTheme ? theme : lastCourseTheme;
+        const handleColorChange = () => {
+            const colorPicker = document.getElementById(COURSE_COLOR_INPUT) as HTMLInputElement;
+            colorPicker.value = courseColor;
+            colorPicker.onchange = (e: Event) => {
+                const target = e.target as HTMLInputElement;
+                const newTheme: string = target.value;
+                const configData: ConfigData = JSON.parse(
+                    localStorage.getItem(CONFIG_DATA) ?? '{}'
+                );
+                const targetCourseIndex: number = configData.courses.findIndex(
+                    courses => courses.uuid === uuid
+                );
+                const courseAdded: boolean = targetCourseIndex > -1;
+                if (courseAdded) {
+                    configData.courses[targetCourseIndex].theme = newTheme;
+                    localStorage.setItem(CONFIG_DATA, JSON.stringify(configData));
+                    reloadLastTimetable();
+                } else {
+                    localStorage.setItem(LAST_NEW_THEME, newTheme);
+                }
+                reloadCourses();
+                closeAllModals();
+            };
+            openModal(COURSE_COLOR_CONFIG);
+        };
 
         const courseDiv: HTMLDivElement = document.createElement('div');
         addClass(courseDiv, COURSE);
@@ -260,6 +287,7 @@ function reloadCourses() {
         const courseTheme: HTMLButtonElement = document.createElement('button');
         addClass(courseTheme, COURSE_THEME);
         courseTheme.style.background = courseColor;
+        courseTheme.onclick = handleColorChange;
         courseTheme.setAttribute(ATTR_THEME, courseColor);
 
         const courseTitle: HTMLInputElement = document.createElement('input');
@@ -322,7 +350,7 @@ function reloadCourses() {
 }
 
 function initNewLastTheme() {
-    const newColor: string = getRndColor();
+    const newColor: string = rgbToHex(getRndColor());
     localStorage.setItem(LAST_NEW_THEME, newColor);
 }
 

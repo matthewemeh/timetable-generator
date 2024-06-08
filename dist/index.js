@@ -3,7 +3,7 @@ let currentTimetable;
 const { PRIMARY } = COLORS;
 const { ATTR_THEME } = ATTRIBUTES;
 const { CONFIG_DATA, LAST_NEW_THEME, CHOSEN_TIME_TYPE } = LOCAL_STORAGE_KEYS;
-const { OVERLAY, TIMETABLE, INFO_TILE, TODAY_TEXT, COURSE_LIST, NEW_END_TIME, EMPTY_COURSES, NEW_START_TIME, SETTINGS_CONFIG, COURSE_DURATION } = IDs;
+const { OVERLAY, TIMETABLE, INFO_TILE, TODAY_TEXT, COURSE_LIST, NEW_END_TIME, EMPTY_COURSES, NEW_START_TIME, SETTINGS_CONFIG, COURSE_DURATION, COURSE_COLOR_INPUT, COURSE_COLOR_CONFIG } = IDs;
 const { TIME, MODAL, ACTIVE, COURSE, BUTTON, HIDDEN, PICKER, COURSE_DAY, COURSE_ROW, COURSE_ADD, COURSE_DAYS, COURSE_TIME, COURSE_SLOT, COURSE_TITLE, DISPLAY_NONE, COURSE_THEME, COURSE_DELETE } = CLASSES;
 const { HOUR_VALUE, MINUTE_VALUE, MERIDIAN_VALUE } = QUERIES;
 const { year, month, hour12, minutes, monthDate, longDayOfWeek, longMonthName } = getDateProps();
@@ -149,11 +149,34 @@ function reloadCourses() {
             theme: getRndColor()
         };
         const courseColor = uuid || !lastCourseTheme ? theme : lastCourseTheme;
+        const handleColorChange = () => {
+            const colorPicker = document.getElementById(COURSE_COLOR_INPUT);
+            colorPicker.value = courseColor;
+            colorPicker.onchange = (e) => {
+                const target = e.target;
+                const newTheme = target.value;
+                const configData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+                const targetCourseIndex = configData.courses.findIndex(courses => courses.uuid === uuid);
+                const courseAdded = targetCourseIndex > -1;
+                if (courseAdded) {
+                    configData.courses[targetCourseIndex].theme = newTheme;
+                    localStorage.setItem(CONFIG_DATA, JSON.stringify(configData));
+                    reloadLastTimetable();
+                }
+                else {
+                    localStorage.setItem(LAST_NEW_THEME, newTheme);
+                }
+                reloadCourses();
+                closeAllModals();
+            };
+            openModal(COURSE_COLOR_CONFIG);
+        };
         const courseDiv = document.createElement('div');
         addClass(courseDiv, COURSE);
         const courseTheme = document.createElement('button');
         addClass(courseTheme, COURSE_THEME);
         courseTheme.style.background = courseColor;
+        courseTheme.onclick = handleColorChange;
         courseTheme.setAttribute(ATTR_THEME, courseColor);
         const courseTitle = document.createElement('input');
         addClass(courseTitle, COURSE_TITLE);
@@ -204,7 +227,7 @@ function reloadCourses() {
     }
 }
 function initNewLastTheme() {
-    const newColor = getRndColor();
+    const newColor = rgbToHex(getRndColor());
     localStorage.setItem(LAST_NEW_THEME, newColor);
 }
 function closeAllModals() {

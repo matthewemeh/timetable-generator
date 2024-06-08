@@ -28,8 +28,10 @@ const IDs = {
     NEW_END_TIME: 'new-end-time',
     EMPTY_COURSES: 'empty-courses',
     NEW_START_TIME: 'new-start-time',
+    COURSE_COLOR_INPUT: 'course-color',
     SETTINGS_CONFIG: 'settings-config',
-    COURSE_DURATION: 'course-duration'
+    COURSE_DURATION: 'course-duration',
+    COURSE_COLOR_CONFIG: 'course-color-config'
 };
 
 const QUERIES = {
@@ -55,17 +57,17 @@ const LOCAL_STORAGE_KEYS = {
 const configData: ConfigData = {
     courses: [
         {
-            theme: '#c00',
+            theme: '#cc0000',
             title: 'CHG 121',
             uuid: 'tqc89wz6enlvh8emvwgm4xjtum8negrc'
         },
         {
-            theme: '#00f',
+            theme: '#0000ff',
             title: 'GEG 128',
             uuid: '1vzfk58o3ihbzhjhvjvw8rk6v9n2rdfh'
         },
         {
-            theme: '#0f0',
+            theme: '#00ff00',
             title: 'MAT 212',
             uuid: 'zdfgvcklpojycsbafj2m5wpco3bgbnrr'
         }

@@ -235,11 +235,12 @@ input[type='text']:focus {
 .modal {
     top: 50%;
     left: 50%;
-    z-index: 10000;
-    background: #fff;
     width: 600px;
     height: 450px;
+    z-index: 10000;
     position: fixed;
+    border-radius: 8px;
+    background: #fff;
     transform: translate(-50%, -50%);
 }
 
@@ -247,10 +248,17 @@ input[type='text']:focus {
     gap: 10px;
     padding: 10px;
     display: flex;
-    border-radius: 8px;
     background: #fff;
     align-items: center;
     flex-direction: column;
+    justify-content: center;
+}
+
+#course-color-config.modal {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
     justify-content: center;
 }
 

@@ -45,18 +45,31 @@ function getRndInteger(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-const getRndColor = (
+function getRndColor(
     min: [number, number, number] = [0, 0, 0],
     max: [number, number, number] = [255, 255, 255]
-): string => {
+): string {
     const r: number = getRndInteger(min[0], max[0]);
     const g: number = getRndInteger(min[1], max[1]);
     const b: number = getRndInteger(min[2], max[2]);
 
     return `rgb(${r},${g},${b})`;
-};
+}
 
-const randomSelect = (array: any[]) => array[getRndInteger(0, array.length)];
+function rgbToHex(rgb: string): string {
+    const rgbArray: string[] = rgb.replace(/[^\d,]/g, '').split(',');
+    let hex: string = '#';
+    for (let i = 0; i < rgbArray.length; i++) {
+        let num = parseInt(rgbArray[i], 10);
+        let strNum = num < 16 ? '0' + num.toString(16) : num.toString(16);
+        hex += strNum;
+    }
+    return hex;
+}
+
+function randomSelect(array: any[]): any {
+    return array[getRndInteger(0, array.length)];
+}
 
 function uuid(): string {
     const UUID_LENGTH = 32,

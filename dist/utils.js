@@ -35,13 +35,25 @@ function removeClass(element, ...classes) {
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
-const getRndColor = (min = [0, 0, 0], max = [255, 255, 255]) => {
+function getRndColor(min = [0, 0, 0], max = [255, 255, 255]) {
     const r = getRndInteger(min[0], max[0]);
     const g = getRndInteger(min[1], max[1]);
     const b = getRndInteger(min[2], max[2]);
     return `rgb(${r},${g},${b})`;
-};
-const randomSelect = (array) => array[getRndInteger(0, array.length)];
+}
+function rgbToHex(rgb) {
+    const rgbArray = rgb.replace(/[^\d,]/g, '').split(',');
+    let hex = '#';
+    for (let i = 0; i < rgbArray.length; i++) {
+        let num = parseInt(rgbArray[i], 10);
+        let strNum = num < 16 ? '0' + num.toString(16) : num.toString(16);
+        hex += strNum;
+    }
+    return hex;
+}
+function randomSelect(array) {
+    return array[getRndInteger(0, array.length)];
+}
 function uuid() {
     const UUID_LENGTH = 32, characters = '1234567890qwertyuiopasdfghjklzxcvbnm';
     let newUuid = '';
