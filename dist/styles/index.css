@@ -107,6 +107,7 @@ input[type='text']:focus {
 
 .course-title {
     width: 50%;
+    font-size: 1rem;
     font-weight: 600;
     border-bottom: 2px solid transparent;
     transition: var(--default-transition);
@@ -128,9 +129,10 @@ input[type='text']:focus {
 
 .course-slot {
     display: flex;
-    font-size: 100%;
     align-items: center;
     justify-content: center;
+    font-size: 130% !important;
+    font-weight: 600 !important;
 }
 
 .course-day.active {
@@ -145,14 +147,11 @@ input[type='text']:focus {
     grid-template-columns: repeat(6, 1fr);
 }
 
-.course-row {
-    /* border: 1px solid #000; */
-}
-
 .course-slot,
 .course-time {
     height: 100px;
-    font-size: 16px;
+    font-size: 1em;
+    font-weight: 500;
     border-radius: 7%;
 }
 
@@ -335,6 +334,7 @@ path {
 
 #generate {
     font-size: 14px;
+    white-space: nowrap;
     margin: 0 !important;
     padding: 4px 8px !important;
     border-radius: 5px !important;

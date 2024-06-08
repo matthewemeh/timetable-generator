@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 const CLASSES = {
     TIME: 'time',
     BUTTON: 'btn',
@@ -31,6 +31,12 @@ const IDs = {
     SETTINGS_CONFIG: 'settings-config',
     COURSE_DURATION: 'course-duration'
 };
+const QUERIES = {
+    HOUR_VALUE: '.part.hour',
+    MINUTE_VALUE: '.part.min',
+    MERIDIAN_VALUE: '.part.am-pm'
+};
+
 const COLORS = {
     PRIMARY: 'var(--theme-1)'
 };
@@ -39,7 +45,6 @@ const ATTRIBUTES = {
 };
 const LOCAL_STORAGE_KEYS = {
     CONFIG_DATA: 'configData',
-    CHOSEN_TIME: 'chosenTime',
     LAST_NEW_THEME: 'lastNewColor',
     CHOSEN_TIME_TYPE: 'chosenTimeType'
 };

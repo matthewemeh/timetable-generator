@@ -4,7 +4,7 @@ const { PRIMARY } = COLORS;
 
 const { ATTR_THEME } = ATTRIBUTES;
 
-const { CONFIG_DATA, LAST_NEW_THEME, CHOSEN_TIME, CHOSEN_TIME_TYPE } = LOCAL_STORAGE_KEYS;
+const { CONFIG_DATA, LAST_NEW_THEME, CHOSEN_TIME_TYPE } = LOCAL_STORAGE_KEYS;
 
 const {
     OVERLAY,
@@ -38,6 +38,8 @@ const {
     COURSE_THEME,
     COURSE_DELETE
 } = CLASSES;
+
+const { HOUR_VALUE, MINUTE_VALUE, MERIDIAN_VALUE } = QUERIES;
 
 const { year, month, hour12, minutes, monthDate, longDayOfWeek, longMonthName }: DateProps =
     getDateProps();
@@ -380,11 +382,28 @@ function saveConfig() {
     showAlert({ msg: 'Configuration saved' });
 }
 
-function openTimePicker(chosenTimeType: string) {
+function openTimePicker(chosenTimeType: 'start' | 'end') {
     const picker = document.querySelector(`.${PICKER}`) as HTMLDivElement;
     removeClass(picker, HIDDEN);
 
-    localStorage.removeItem(CHOSEN_TIME);
+    const { startTime, endTime }: ConfigData = JSON.parse(
+        localStorage.getItem(CONFIG_DATA) ?? '{}'
+    );
+
+    const hourValue = document.querySelector(HOUR_VALUE) as HTMLSpanElement;
+    const minuteValue = document.querySelector(MINUTE_VALUE) as HTMLSpanElement;
+    const meridianValue = document.querySelector(MERIDIAN_VALUE) as HTMLSpanElement;
+
+    if (chosenTimeType === 'start') {
+        hourValue.innerText = `${startTime.hour > 12 ? startTime.hour - 12 : startTime.hour}`;
+        minuteValue.innerText = startTime.minute?.toString().padStart(2, '0') ?? '00';
+        meridianValue.innerText = ` ${startTime.hour >= 12 ? 'PM' : 'AM'}`;
+    } else {
+        hourValue.innerText = `${endTime.hour > 12 ? endTime.hour - 12 : endTime.hour}`;
+        minuteValue.innerText = endTime.minute?.toString().padStart(2, '0') ?? '00';
+        meridianValue.innerText = ` ${endTime.hour >= 12 ? 'PM' : 'AM'}`;
+    }
+
     localStorage.setItem(CHOSEN_TIME_TYPE, chosenTimeType);
 }
 
@@ -416,8 +435,6 @@ function closeTimePicker() {
     addClass(picker, HIDDEN);
 }
 
-const die = (): any => {};
-
 function pool<T>(array: T[], poolLength: number, blanksAllowed?: boolean): (T | null)[] {
     const newPool: any[] = [];
 
@@ -440,11 +457,6 @@ function generateTimetable() {
     let monthDetails: string = `${year}-${month.toString().padStart(2, '0')}-${monthDate
         .toString()
         .padStart(2, '0')}`;
-    let timeStart: number = getDateProps(
-        `${monthDetails}T${startTime.hour.toString().padStart(2, '0')}:${
-            startTime.minute?.toString().padStart(2, '0') ?? '00'
-        }`
-    ).millisecondsFromInception;
     let timeEnd: number = getDateProps(
         `${monthDetails}T${endTime.hour.toString().padStart(2, '0')}:${
             endTime.minute?.toString().padStart(2, '0') ?? '00'
@@ -462,9 +474,15 @@ function generateTimetable() {
             true
         );
 
+        let timeStart: number = getDateProps(
+            `${monthDetails}T${startTime.hour.toString().padStart(2, '0')}:${
+                startTime.minute?.toString().padStart(2, '0') ?? '00'
+            }`
+        ).millisecondsFromInception;
         while (timeStart + courseDurationSpacingMs <= timeEnd) {
             const randomElement: string | null = randomSelect(newPool);
             tableRow.courseUuids.push(randomElement ?? '');
+            timeStart += courseDurationSpacingMs;
         }
 
         tableRows.push(tableRow);
@@ -479,7 +497,6 @@ function generateTimetable() {
         courseDurationSpacing
     };
     currentTimetable = newTimetable;
-    console.log(newTimetable);
     const configData: ConfigData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
     configData.timetables.push(newTimetable);
     localStorage.setItem(CONFIG_DATA, JSON.stringify(configData));
