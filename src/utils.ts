@@ -45,15 +45,22 @@ function getRndInteger(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function getRndColor(
-    min: [number, number, number] = [0, 0, 0],
-    max: [number, number, number] = [255, 255, 255]
-): string {
+function getRndColor({
+    format = 'RGB',
+    min = [0, 0, 0],
+    max = [255, 255, 255]
+}: GetRndColorProps): string {
     const r: number = getRndInteger(min[0], max[0]);
     const g: number = getRndInteger(min[1], max[1]);
     const b: number = getRndInteger(min[2], max[2]);
+    const rgbValue: string = `rgb(${r},${g},${b})`;
 
-    return `rgb(${r},${g},${b})`;
+    switch (format) {
+        case 'HEX':
+            return rgbToHex(rgbValue);
+        default:
+            return rgbValue;
+    }
 }
 
 function rgbToHex(rgb: string): string {

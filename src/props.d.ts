@@ -23,3 +23,9 @@ interface DateProps {
     shortMonthName: MonthShortName;
     millisecondsFromInception: number;
 }
+
+interface GetRndColorProps {
+    format?: SupportedColorTypes;
+    min?: [number, number, number];
+    max?: [number, number, number];
+}

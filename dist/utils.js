@@ -35,11 +35,17 @@ function removeClass(element, ...classes) {
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
-function getRndColor(min = [0, 0, 0], max = [255, 255, 255]) {
+function getRndColor({ format = 'RGB', min = [0, 0, 0], max = [255, 255, 255] }) {
     const r = getRndInteger(min[0], max[0]);
     const g = getRndInteger(min[1], max[1]);
     const b = getRndInteger(min[2], max[2]);
-    return `rgb(${r},${g},${b})`;
+    const rgbValue = `rgb(${r},${g},${b})`;
+    switch (format) {
+        case 'HEX':
+            return rgbToHex(rgbValue);
+        default:
+            return rgbValue;
+    }
 }
 function rgbToHex(rgb) {
     const rgbArray = rgb.replace(/[^\d,]/g, '').split(',');

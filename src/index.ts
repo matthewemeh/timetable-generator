@@ -1,10 +1,8 @@
-let currentTimetable: Timetable;
-
 const { PRIMARY } = COLORS;
 
 const { ATTR_THEME } = ATTRIBUTES;
 
-const { CONFIG_DATA, LAST_NEW_THEME, CHOSEN_TIME_TYPE } = LOCAL_STORAGE_KEYS;
+const { CONFIG_DATA, LAST_NEW_THEME, CHOSEN_TIME_TYPE, VERSION } = LOCAL_STORAGE_KEYS;
 
 const {
     OVERLAY,
@@ -48,8 +46,6 @@ const { year, month, hour12, minutes, monthDate, longDayOfWeek, longMonthName }:
     getDateProps();
 
 let addCourseClicked = false;
-
-function loadConfigData() {}
 
 function emptyTable(selector: string) {
     const tableBody = document.querySelector<HTMLTableSectionElement>(selector);
@@ -137,29 +133,29 @@ function initTimeframe(
 }
 
 function initTimetable() {
-    const { courseDurationSpacing, endTime, startTime }: ConfigData = JSON.parse(
+    const { courseDurationSpacing, endTime, startTime, timetable }: ConfigData = JSON.parse(
         localStorage.getItem(CONFIG_DATA) ?? '{}'
     );
-    initTimetableHeader();
-    initTimeframe(courseDurationSpacing, startTime, endTime);
+    if (timetable) {
+        initTimeframe(courseDurationSpacing, startTime, endTime);
+    }
 }
 
 function reloadLastTimetable() {
-    const { timetables, courses }: ConfigData = JSON.parse(
-        localStorage.getItem(CONFIG_DATA) ?? '{ timetables: [] }'
+    const { timetable, courses }: ConfigData = JSON.parse(
+        localStorage.getItem(CONFIG_DATA) ?? '{}'
     );
-    const lastSavedTimetable: Timetable | undefined = timetables.pop();
 
-    if (!lastSavedTimetable) return;
+    if (!timetable) return;
 
-    const { courseDurationSpacing, startTime, endTime } = lastSavedTimetable;
+    const { courseDurationSpacing, startTime, endTime } = timetable;
     initTimeframe(courseDurationSpacing, startTime, endTime);
 
-    lastSavedTimetable.tableRows.forEach(({ courseUuids }: TableRow, i: number) => {
+    const courseRows = document.getElementsByClassName(
+        COURSE_ROW
+    ) as HTMLCollectionOf<HTMLDivElement>;
+    timetable.tableRows.forEach(({ courseUuids }: TableRow, i: number) => {
         courseUuids.forEach((courseUuid, j: number) => {
-            const courseRows = document.getElementsByClassName(
-                COURSE_ROW
-            ) as HTMLCollectionOf<HTMLDivElement>;
             const courseRow: HTMLDivElement | null = courseRows.item(j);
 
             if (courseRow) {
@@ -236,8 +232,9 @@ function reloadCourses() {
     const { courses }: ConfigData = JSON.parse(
         localStorage.getItem(CONFIG_DATA) ?? '{ courses: [] }'
     );
-
     const coursesToShow: Course[] = courses.filter(({ isDeleted }: Course) => !isDeleted);
+    const coursesLength: number = coursesToShow.length;
+    const stopLength = coursesLength === 0 ? (addCourseClicked ? 0 : -1) : coursesLength;
 
     emptyTable(`#${COURSE_LIST}`);
     const emptyCoursesDiv = document.getElementById(EMPTY_COURSES)!;
@@ -246,30 +243,28 @@ function reloadCourses() {
 
     const courseList = document.getElementById(COURSE_LIST)!;
     const lastCourseTheme: string | null = localStorage.getItem(LAST_NEW_THEME);
-    const coursesLength: number = coursesToShow.length;
-    const stopLength = coursesLength === 0 ? (addCourseClicked ? 0 : -1) : coursesLength;
 
     for (let i = 0; i <= stopLength; i++) {
         const { theme, title, uuid }: Course = coursesToShow[i] ?? {
             uuid: '',
             title: '',
-            theme: getRndColor()
+            theme: getRndColor({ format: 'HEX' })
         };
         const courseColor: string = uuid || !lastCourseTheme ? theme : lastCourseTheme;
         const handleColorChange = () => {
             const courseName = document.getElementById(COURSE_NAME) as HTMLParagraphElement;
             courseName.innerText = title;
+
             const colorPicker = document.getElementById(COURSE_COLOR_INPUT) as HTMLInputElement;
             colorPicker.value = courseColor;
             colorPicker.onchange = (e: Event) => {
+                let configData: ConfigData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+                const targetCourseIndex: number = configData.courses.findIndex(
+                    course => course.uuid === uuid
+                );
+
                 const target = e.target as HTMLInputElement;
                 const newTheme: string = target.value;
-                const configData: ConfigData = JSON.parse(
-                    localStorage.getItem(CONFIG_DATA) ?? '{}'
-                );
-                const targetCourseIndex: number = configData.courses.findIndex(
-                    courses => courses.uuid === uuid
-                );
                 const courseAdded: boolean = targetCourseIndex > -1;
                 if (courseAdded) {
                     configData.courses[targetCourseIndex].theme = newTheme;
@@ -298,36 +293,31 @@ function reloadCourses() {
         courseTitle.placeholder = 'Enter a course';
         courseTitle.value = title;
         if (uuid) {
-            courseTitle.addEventListener('blur', e => {
+            courseTitle.onblur = (e: FocusEvent) => {
+                let configData: ConfigData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+                const targetCourseIndex: number = configData.courses.findIndex(
+                    course => course.uuid === uuid
+                );
                 const target = e.target as HTMLInputElement;
                 const newTitle: string = target.value;
+                courseTitle.style.borderBottomColor = 'transparent';
 
                 if (newTitle !== title) {
-                    const configData: ConfigData = JSON.parse(
-                        localStorage.getItem(CONFIG_DATA) ?? '{}'
-                    );
-                    configData.courses[i].title = newTitle;
+                    configData.courses[targetCourseIndex].title = newTitle;
                     localStorage.setItem(CONFIG_DATA, JSON.stringify(configData));
                     reloadCourses();
                     reloadLastTimetable();
                 }
-            });
+            };
         } else {
-            courseTitle.addEventListener(
-                'keydown',
-                (e: KeyboardEvent) => {
-                    const name: string = e.key;
-                    if (name === 'Enter') addCourse();
-                },
-                false
-            );
+            courseTitle.onkeydown = (e: KeyboardEvent) => {
+                const name: string = e.key;
+                if (name === 'Enter') addCourse();
+            };
         }
 
         courseTitle.onfocus = () => {
             courseTitle.style.borderBottomColor = courseColor;
-        };
-        courseTitle.onblur = () => {
-            courseTitle.style.borderBottomColor = 'transparent';
         };
 
         const courseAction1: HTMLButtonElement = document.createElement('button');
@@ -353,13 +343,16 @@ function reloadCourses() {
 }
 
 function initNewLastTheme() {
-    const newColor: string = rgbToHex(getRndColor());
+    const newColor: string = getRndColor({ format: 'HEX' });
     localStorage.setItem(LAST_NEW_THEME, newColor);
 }
 
 function closeAllModals() {
     const overlay = document.getElementById(OVERLAY) as HTMLDivElement;
     addClass(overlay, HIDDEN);
+
+    const picker = document.querySelector(`.${PICKER}`) as HTMLDivElement;
+    if (!picker.classList.contains(HIDDEN)) addClass(picker, HIDDEN);
 
     const modals = document.getElementsByClassName(MODAL) as HTMLCollectionOf<HTMLDivElement>;
     for (let i = 0; i < modals.length; i++) {
@@ -481,8 +474,14 @@ function pool<T>(array: T[], poolLength: number, blanksAllowed?: boolean): (T | 
 }
 
 function generateTimetable() {
-    const { courses, courseDurationSpacing, endTime, startTime, timetables }: ConfigData =
-        JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+    const { courses, courseDurationSpacing, endTime, startTime }: ConfigData = JSON.parse(
+        localStorage.getItem(CONFIG_DATA) ?? '{}'
+    );
+    const coursesToShow: Course[] = courses.filter(({ isDeleted }) => !isDeleted);
+
+    if (coursesToShow.length === 0) {
+        return showAlert({ msg: 'Please add courses' });
+    }
 
     let courseDurationSpacingMs: number = courseDurationSpacing * 60 * 1000;
     let monthDetails: string = `${year}-${month.toString().padStart(2, '0')}-${monthDate
@@ -500,8 +499,8 @@ function generateTimetable() {
     daysOfWeek.forEach((dayOfWeek: DayLongName) => {
         let tableRow: TableRow = { courseUuids: [], dayOfWeek };
         const newPool: (string | null)[] = pool<string>(
-            courses.map(({ uuid }) => uuid),
-            courses.length * 10,
+            coursesToShow.map(({ uuid }) => uuid),
+            coursesToShow.length * 10,
             true
         );
 
@@ -527,11 +526,20 @@ function generateTimetable() {
         uuid: newUuid,
         courseDurationSpacing
     };
-    currentTimetable = newTimetable;
     const configData: ConfigData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
-    configData.timetables.push(newTimetable);
+    configData.timetable = newTimetable;
     localStorage.setItem(CONFIG_DATA, JSON.stringify(configData));
     reloadLastTimetable();
+}
+
+function reloadApp() {
+    initNewLastTheme();
+    restoreConfigData();
+    initTimetable();
+    reloadCourses();
+    reloadSettings();
+    reloadLastTimetable();
+    initStorageListener();
 }
 
 window.onload = () => {

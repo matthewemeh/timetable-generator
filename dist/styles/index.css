@@ -147,6 +147,20 @@ input[type='text']:focus {
     grid-template-columns: repeat(6, 1fr);
 }
 
+#empty-timetable {
+    display: none;
+}
+
+.course-days:empty + #empty-timetable {
+    flex: 1;
+    gap: 10px;
+    display: flex;
+    align-items: center;
+    color: var(--theme-1);
+    flex-direction: column;
+    justify-content: center;
+}
+
 .course-slot,
 .course-time {
     height: 100px;
@@ -346,6 +360,7 @@ path {
     gap: 10px;
     display: flex;
     align-items: center;
+    color: var(--theme-1);
     flex-direction: column;
     justify-content: center;
 }
@@ -395,6 +410,10 @@ path {
 .input-style:focus {
     border-color: #007bff;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+#done {
+    margin-top: 12px;
 }
 
 @media (prefers-color-scheme: dark) {

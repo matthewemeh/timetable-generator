@@ -91,7 +91,7 @@
                 <div class="am-pm-btn am">AM</div>
                 <div class="am-pm-btn pm active">PM</div>
             </div>
-            <button class="btn" onclick="closeTimePicker()">DONE</button>
+            <button id="done" class="btn" onclick="closeTimePicker()">DONE</button>
         </div>
 
         <main>
@@ -160,6 +160,23 @@
 
             <aside id="courses-container">
                 <div id="empty-courses">
+                    <svg
+                        id="icon"
+                        width="55px"
+                        height="55px"
+                        viewBox="0 0 32 32"
+                        fill="var(--theme-1)"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            fill="var(--theme-1)"
+                            d="M24,30H8a2.0023,2.0023,0,0,1-2-2V4A2.002,2.002,0,0,1,8,2H24a2.0023,2.0023,0,0,1,2,2V20.6182l-5-2.5-5,2.5V4H8V28H24V24h2v4A2.0027,2.0027,0,0,1,24,30ZM21,15.8818l3,1.5V4H18V17.3818Z" />
+                        <rect
+                            width="32"
+                            height="32"
+                            fill="none"
+                            id="_Transparent_Rectangle_"
+                            data-name="&lt;Transparent Rectangle&gt;" />
+                    </svg>
                     <p id="no-courses">No Courses added yet</p>
                     <button
                         style="border-width: 0"
@@ -186,13 +203,20 @@
             </aside>
 
             <section id="timetable">
-                <div class="course-days">
-                    <div class="course-day">Mon</div>
-                    <div class="course-day">Tue</div>
-                    <div class="course-day">Wed</div>
-                    <div class="course-day">Thu</div>
-                    <div class="course-day">Fri</div>
-                </div>
+                <div class="course-days"></div>
+                <p id="empty-timetable">
+                    <svg
+                        width="65px"
+                        height="65px"
+                        fill="var(--theme-1)"
+                        viewBox="0 0 1920 1920"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            fill-rule="evenodd"
+                            d="M1800 1320v420c0 33-27 60-60 60h-420v-480h480Zm-600 0v480H720v-480h480Zm-600 0v480H180c-33 0-60-27-60-60v-420h480Zm1200-600v480h-480V720h480Zm-600 0v480H720V720h480Zm-600 0v480H120V720h480Zm1140-600c33 0 60 27 60 60v420h-480V120h420Zm-540 0v480H720V120h480Zm-600 0v480H120V180c0-33 27-60 60-60h420ZM1740 0H180C80.76 0 0 80.76 0 180v1560c0 99.24 80.76 180 180 180h1560c99.24 0 180-80.76 180-180V180c0-99.24-80.76-180-180-180Z" />
+                    </svg>
+                    <span>No timetable added yet</span>
+                </p>
             </section>
         </main>
     </body>

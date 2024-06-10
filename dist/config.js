@@ -51,92 +51,9 @@ const LOCAL_STORAGE_KEYS = {
     CHOSEN_TIME_TYPE: 'chosenTimeType'
 };
 const configData = {
-    courses: [
-        {
-            theme: '#cc0000',
-            title: 'CHG 121',
-            uuid: 'tqc89wz6enlvh8emvwgm4xjtum8negrc'
-        },
-        {
-            theme: '#0000ff',
-            title: 'GEG 128',
-            uuid: '1vzfk58o3ihbzhjhvjvw8rk6v9n2rdfh'
-        },
-        {
-            theme: '#00ff00',
-            title: 'MAT 212',
-            uuid: 'zdfgvcklpojycsbafj2m5wpco3bgbnrr'
-        }
-    ],
+    courses: [],
     endTime: { hour: 16 },
     startTime: { hour: 8 },
     courseDurationSpacing: 60,
-    timetables: [
-        {
-            endTime: { hour: 9 },
-            startTime: { hour: 0 },
-            courseDurationSpacing: 60,
-            uuid: 'd2ynx4lykgfmgrql4cw6cmkndbwv7zg8',
-            tableRows: [
-                {
-                    dayOfWeek: 'Monday',
-                    courseUuids: [
-                        '',
-                        'tqc89wz6enlvh8emvwgm4xjtum8negrc',
-                        '1vzfk58o3ihbzhjhvjvw8rk6v9n2rdfh',
-                        '',
-                        'zdfgvcklpojycsbafj2m5wpco3bgbnrr',
-                        '',
-                        '',
-                        '1vzfk58o3ihbzhjhvjvw8rk6v9n2rdfh'
-                    ]
-                },
-                {
-                    dayOfWeek: 'Tuesday',
-                    courseUuids: [
-                        'tqc89wz6enlvh8emvwgm4xjtum8negrc',
-                        '1vzfk58o3ihbzhjhvjvw8rk6v9n2rdfh',
-                        '',
-                        '',
-                        'zdfgvcklpojycsbafj2m5wpco3bgbnrr',
-                        '',
-                        '',
-                        '1vzfk58o3ihbzhjhvjvw8rk6v9n2rdfh',
-                        '1vzfk58o3ihbzhjhvjvw8rk6v9n2rdfh'
-                    ]
-                },
-                {
-                    dayOfWeek: 'Wednesday',
-                    courseUuids: [
-                        'tqc89wz6enlvh8emvwgm4xjtum8negrc',
-                        '1vzfk58o3ihbzhjhvjvw8rk6v9n2rdfh',
-                        '',
-                        'zdfgvcklpojycsbafj2m5wpco3bgbnrr',
-                        ''
-                    ]
-                },
-                {
-                    dayOfWeek: 'Thursday',
-                    courseUuids: [
-                        '',
-                        '',
-                        'tqc89wz6enlvh8emvwgm4xjtum8negrc',
-                        '1vzfk58o3ihbzhjhvjvw8rk6v9n2rdfh',
-                        'zdfgvcklpojycsbafj2m5wpco3bgbnrr'
-                    ]
-                },
-                {
-                    dayOfWeek: 'Friday',
-                    courseUuids: [
-                        'tqc89wz6enlvh8emvwgm4xjtum8negrc',
-                        '1vzfk58o3ihbzhjhvjvw8rk6v9n2rdfh',
-                        'zdfgvcklpojycsbafj2m5wpco3bgbnrr',
-                        '',
-                        '',
-                        '1vzfk58o3ihbzhjhvjvw8rk6v9n2rdfh'
-                    ]
-                }
-            ]
-        }
-    ]
+    timetable: null
 };

@@ -25,7 +25,7 @@ interface TimeDetails {
 
 interface ConfigData {
     courses: Course[];
-    timetables: Timetable[];
+    timetable: Timetable | null;
     courseDurationSpacing: number;
     endTime: { hour: number; minute?: number };
     startTime: { hour: number; minute?: number };

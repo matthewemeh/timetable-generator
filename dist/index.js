@@ -1,14 +1,12 @@
 "use strict";
-let currentTimetable;
 const { PRIMARY } = COLORS;
 const { ATTR_THEME } = ATTRIBUTES;
-const { CONFIG_DATA, LAST_NEW_THEME, CHOSEN_TIME_TYPE } = LOCAL_STORAGE_KEYS;
+const { CONFIG_DATA, LAST_NEW_THEME, CHOSEN_TIME_TYPE, VERSION } = LOCAL_STORAGE_KEYS;
 const { OVERLAY, TIMETABLE, INFO_TILE, TODAY_TEXT, COURSE_NAME, COURSE_LIST, NEW_END_TIME, EMPTY_COURSES, NEW_START_TIME, SETTINGS_CONFIG, COURSE_DURATION, COURSE_COLOR_INPUT, COURSE_COLOR_CONFIG } = IDs;
 const { TIME, MODAL, ACTIVE, COURSE, BUTTON, HIDDEN, PICKER, COURSE_DAY, COURSE_ROW, COURSE_ADD, COURSE_DAYS, COURSE_TIME, COURSE_SLOT, COURSE_TITLE, DISPLAY_NONE, COURSE_THEME, COURSE_DELETE } = CLASSES;
 const { HOUR_VALUE, MINUTE_VALUE, MERIDIAN_VALUE } = QUERIES;
 const { year, month, hour12, minutes, monthDate, longDayOfWeek, longMonthName } = getDateProps();
 let addCourseClicked = false;
-function loadConfigData() { }
 function emptyTable(selector) {
     const tableBody = document.querySelector(selector);
     while (tableBody?.lastChild)
@@ -65,20 +63,20 @@ function initTimeframe(courseDurationSpacing, startTime, endTime) {
     }
 }
 function initTimetable() {
-    const { courseDurationSpacing, endTime, startTime } = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
-    initTimetableHeader();
-    initTimeframe(courseDurationSpacing, startTime, endTime);
+    const { courseDurationSpacing, endTime, startTime, timetable } = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+    if (timetable) {
+        initTimeframe(courseDurationSpacing, startTime, endTime);
+    }
 }
 function reloadLastTimetable() {
-    const { timetables, courses } = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{ timetables: [] }');
-    const lastSavedTimetable = timetables.pop();
-    if (!lastSavedTimetable)
+    const { timetable, courses } = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+    if (!timetable)
         return;
-    const { courseDurationSpacing, startTime, endTime } = lastSavedTimetable;
+    const { courseDurationSpacing, startTime, endTime } = timetable;
     initTimeframe(courseDurationSpacing, startTime, endTime);
-    lastSavedTimetable.tableRows.forEach(({ courseUuids }, i) => {
+    const courseRows = document.getElementsByClassName(COURSE_ROW);
+    timetable.tableRows.forEach(({ courseUuids }, i) => {
         courseUuids.forEach((courseUuid, j) => {
-            const courseRows = document.getElementsByClassName(COURSE_ROW);
             const courseRow = courseRows.item(j);
             if (courseRow) {
                 const targetedCourse = courses.find(({ uuid }) => uuid === courseUuid);
@@ -132,6 +130,8 @@ function addCourse() {
 function reloadCourses() {
     const { courses } = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{ courses: [] }');
     const coursesToShow = courses.filter(({ isDeleted }) => !isDeleted);
+    const coursesLength = coursesToShow.length;
+    const stopLength = coursesLength === 0 ? (addCourseClicked ? 0 : -1) : coursesLength;
     emptyTable(`#${COURSE_LIST}`);
     const emptyCoursesDiv = document.getElementById(EMPTY_COURSES);
     if (coursesToShow.length > 0 || addCourseClicked)
@@ -140,13 +140,11 @@ function reloadCourses() {
         removeClass(emptyCoursesDiv, DISPLAY_NONE);
     const courseList = document.getElementById(COURSE_LIST);
     const lastCourseTheme = localStorage.getItem(LAST_NEW_THEME);
-    const coursesLength = coursesToShow.length;
-    const stopLength = coursesLength === 0 ? (addCourseClicked ? 0 : -1) : coursesLength;
     for (let i = 0; i <= stopLength; i++) {
         const { theme, title, uuid } = coursesToShow[i] ?? {
             uuid: '',
             title: '',
-            theme: getRndColor()
+            theme: getRndColor({ format: 'HEX' })
         };
         const courseColor = uuid || !lastCourseTheme ? theme : lastCourseTheme;
         const handleColorChange = () => {
@@ -155,10 +153,10 @@ function reloadCourses() {
             const colorPicker = document.getElementById(COURSE_COLOR_INPUT);
             colorPicker.value = courseColor;
             colorPicker.onchange = (e) => {
+                let configData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+                const targetCourseIndex = configData.courses.findIndex(course => course.uuid === uuid);
                 const target = e.target;
                 const newTheme = target.value;
-                const configData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
-                const targetCourseIndex = configData.courses.findIndex(courses => courses.uuid === uuid);
                 const courseAdded = targetCourseIndex > -1;
                 if (courseAdded) {
                     configData.courses[targetCourseIndex].theme = newTheme;
@@ -185,30 +183,29 @@ function reloadCourses() {
         courseTitle.placeholder = 'Enter a course';
         courseTitle.value = title;
         if (uuid) {
-            courseTitle.addEventListener('blur', e => {
+            courseTitle.onblur = (e) => {
+                let configData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+                const targetCourseIndex = configData.courses.findIndex(course => course.uuid === uuid);
                 const target = e.target;
                 const newTitle = target.value;
+                courseTitle.style.borderBottomColor = 'transparent';
                 if (newTitle !== title) {
-                    const configData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
-                    configData.courses[i].title = newTitle;
+                    configData.courses[targetCourseIndex].title = newTitle;
                     localStorage.setItem(CONFIG_DATA, JSON.stringify(configData));
                     reloadCourses();
                     reloadLastTimetable();
                 }
-            });
+            };
         }
         else {
-            courseTitle.addEventListener('keydown', (e) => {
+            courseTitle.onkeydown = (e) => {
                 const name = e.key;
                 if (name === 'Enter')
                     addCourse();
-            }, false);
+            };
         }
         courseTitle.onfocus = () => {
             courseTitle.style.borderBottomColor = courseColor;
-        };
-        courseTitle.onblur = () => {
-            courseTitle.style.borderBottomColor = 'transparent';
         };
         const courseAction1 = document.createElement('button');
         const courseActionClassName1 = uuid ? COURSE_DELETE : COURSE_ADD;
@@ -229,12 +226,15 @@ function reloadCourses() {
     }
 }
 function initNewLastTheme() {
-    const newColor = rgbToHex(getRndColor());
+    const newColor = getRndColor({ format: 'HEX' });
     localStorage.setItem(LAST_NEW_THEME, newColor);
 }
 function closeAllModals() {
     const overlay = document.getElementById(OVERLAY);
     addClass(overlay, HIDDEN);
+    const picker = document.querySelector(`.${PICKER}`);
+    if (!picker.classList.contains(HIDDEN))
+        addClass(picker, HIDDEN);
     const modals = document.getElementsByClassName(MODAL);
     for (let i = 0; i < modals.length; i++) {
         addClass(modals.item(i), HIDDEN);
@@ -324,7 +324,11 @@ function pool(array, poolLength, blanksAllowed) {
     return newPool;
 }
 function generateTimetable() {
-    const { courses, courseDurationSpacing, endTime, startTime, timetables } = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+    const { courses, courseDurationSpacing, endTime, startTime } = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+    const coursesToShow = courses.filter(({ isDeleted }) => !isDeleted);
+    if (coursesToShow.length === 0) {
+        return showAlert({ msg: 'Please add courses' });
+    }
     let courseDurationSpacingMs = courseDurationSpacing * 60 * 1000;
     let monthDetails = `${year}-${month.toString().padStart(2, '0')}-${monthDate
         .toString()
@@ -334,7 +338,7 @@ function generateTimetable() {
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
     daysOfWeek.forEach((dayOfWeek) => {
         let tableRow = { courseUuids: [], dayOfWeek };
-        const newPool = pool(courses.map(({ uuid }) => uuid), courses.length * 10, true);
+        const newPool = pool(coursesToShow.map(({ uuid }) => uuid), coursesToShow.length * 10, true);
         let timeStart = getDateProps(`${monthDetails}T${startTime.hour.toString().padStart(2, '0')}:${startTime.minute?.toString().padStart(2, '0') ?? '00'}`).millisecondsFromInception;
         while (timeStart + courseDurationSpacingMs <= timeEnd) {
             const randomElement = randomSelect(newPool);
@@ -351,11 +355,19 @@ function generateTimetable() {
         uuid: newUuid,
         courseDurationSpacing
     };
-    currentTimetable = newTimetable;
     const configData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
-    configData.timetables.push(newTimetable);
+    configData.timetable = newTimetable;
     localStorage.setItem(CONFIG_DATA, JSON.stringify(configData));
     reloadLastTimetable();
+}
+function reloadApp() {
+    initNewLastTheme();
+    restoreConfigData();
+    initTimetable();
+    reloadCourses();
+    reloadSettings();
+    reloadLastTimetable();
+    initStorageListener();
 }
 window.onload = () => {
     initInfoTile();

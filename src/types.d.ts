@@ -36,3 +36,5 @@ type DayLongName =
     | 'Saturday';
 
 type DayShortName = 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat';
+
+type SupportedColorTypes = 'RGB' | 'HEX';
