@@ -75,6 +75,7 @@ input[type='text']:focus {
 #timetable,
 #courses-container {
     padding: 20px;
+    overflow: hidden;
     background: #fff;
     border-radius: 5px;
 }
@@ -419,5 +420,39 @@ path {
 @media (prefers-color-scheme: dark) {
     :root {
         --theme-1: var(--theme-2);
+    }
+}
+
+@media screen and (max-width: 1023px) {
+    main {
+        padding: 15px;
+        grid-template-rows: 17% 80%;
+        grid-template-columns: 20% 78%;
+    }
+
+    .course-row,
+    .course-days {
+        gap: 2vw;
+    }
+
+    .course-slot,
+    .course-time {
+        font-size: 1.5vw !important;
+    }
+
+    #today-text {
+        font-weight: 500;
+        font-size: 100%;
+    }
+
+    #info-tile {
+        padding: 12px;
+        position: relative;
+    }
+
+    #settings {
+        top: 10px;
+        right: 10px;
+        position: absolute;
     }
 }
