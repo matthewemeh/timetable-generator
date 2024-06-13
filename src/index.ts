@@ -532,14 +532,12 @@ function generateTimetable() {
     reloadLastTimetable();
 }
 
-function reloadApp() {
-    initNewLastTheme();
-    restoreConfigData();
-    initTimetable();
-    reloadCourses();
-    reloadSettings();
-    reloadLastTimetable();
-    initStorageListener();
+function downloadTimetable() {
+    const timetable = document.getElementById('timetable');
+    if (timetable) {
+        // @ts-ignore
+        html2pdf(timetable);
+    }
 }
 
 window.onload = () => {

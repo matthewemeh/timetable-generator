@@ -360,14 +360,11 @@ function generateTimetable() {
     localStorage.setItem(CONFIG_DATA, JSON.stringify(configData));
     reloadLastTimetable();
 }
-function reloadApp() {
-    initNewLastTheme();
-    restoreConfigData();
-    initTimetable();
-    reloadCourses();
-    reloadSettings();
-    reloadLastTimetable();
-    initStorageListener();
+function downloadTimetable() {
+    const timetable = document.getElementById('timetable');
+    if (timetable) {
+        html2pdf(timetable);
+    }
 }
 window.onload = () => {
     initInfoTile();
