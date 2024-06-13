@@ -533,7 +533,7 @@ function generateTimetable() {
 }
 
 function downloadTimetable() {
-    const timetable = document.getElementById('timetable');
+    const timetable = document.getElementById(TIMETABLE);
     if (timetable) {
         // @ts-ignore
         html2pdf(timetable);

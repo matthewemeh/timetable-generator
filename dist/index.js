@@ -361,7 +361,7 @@ function generateTimetable() {
     reloadLastTimetable();
 }
 function downloadTimetable() {
-    const timetable = document.getElementById('timetable');
+    const timetable = document.getElementById(TIMETABLE);
     if (timetable) {
         html2pdf(timetable);
     }
