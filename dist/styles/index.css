@@ -59,7 +59,7 @@ main {
     height: 100vh;
     grid-auto-flow: column;
     background: var(--theme-1);
-    grid-template-rows: 20% 77%;
+    grid-template-rows: 25% 72%;
     grid-template-columns: 25% 73%;
 }
 
@@ -385,6 +385,7 @@ path {
     margin-top: 15px;
 }
 
+#delete,
 #generate {
     font-size: 14px;
     white-space: nowrap;
@@ -393,8 +394,17 @@ path {
     border-radius: 5px !important;
 }
 
+#delete {
+    margin-top: 5px !important;
+    background-color: #e54141;
+}
+
 #generate svg {
     transform: scale(0.85);
+}
+
+#delete svg {
+    transform: scale(0.8);
 }
 
 .sub-settings {

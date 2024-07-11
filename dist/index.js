@@ -323,6 +323,30 @@ function pool(array, poolLength, blanksAllowed) {
     }
     return newPool;
 }
+function emptyTimetable() {
+    const timetableContainer = document.getElementById(TIMETABLE);
+    timetableContainer.innerHTML = `
+    <div class="course-days"></div>
+    <p id="empty-timetable">
+        <svg
+            width="65px"
+            height="65px"
+            fill="var(--theme-1)"
+            viewBox="0 0 1920 1920"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+                fill-rule="evenodd"
+                d="M1800 1320v420c0 33-27 60-60 60h-420v-480h480Zm-600 0v480H720v-480h480Zm-600 0v480H180c-33 0-60-27-60-60v-420h480Zm1200-600v480h-480V720h480Zm-600 0v480H720V720h480Zm-600 0v480H120V720h480Zm1140-600c33 0 60 27 60 60v420h-480V120h420Zm-540 0v480H720V120h480Zm-600 0v480H120V180c0-33 27-60 60-60h420ZM1740 0H180C80.76 0 0 80.76 0 180v1560c0 99.24 80.76 180 180 180h1560c99.24 0 180-80.76 180-180V180c0-99.24-80.76-180-180-180Z" />
+        </svg>
+        <span>No timetable added yet</span>
+    </p>`;
+}
+function deleteTimetable() {
+    const configData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+    configData.timetable = null;
+    localStorage.setItem(CONFIG_DATA, JSON.stringify(configData));
+    emptyTimetable();
+}
 function generateTimetable() {
     const { courses, courseDurationSpacing, endTime, startTime } = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
     const coursesToShow = courses.filter(({ isDeleted }) => !isDeleted);
