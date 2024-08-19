@@ -655,8 +655,13 @@ function generateTimetable() {
 function downloadTimetable() {
     const timetable = document.getElementById(TIMETABLE);
     if (timetable) {
+        const delButtons = document.querySelectorAll<HTMLButtonElement>(`.${COURSE_SLOT_DELETE}`);
+        delButtons.forEach(btn => addClass(btn, DISPLAY_NONE));
         // @ts-ignore
         html2pdf(timetable);
+        setTimeout(() => {
+            delButtons.forEach(btn => removeClass(btn, DISPLAY_NONE));
+        }, 5000);
     }
 }
 
