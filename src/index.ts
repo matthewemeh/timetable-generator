@@ -1,6 +1,6 @@
 const { PRIMARY } = COLORS;
 
-const { ATTR_THEME } = ATTRIBUTES;
+const { ATTR_THEME, ATTR_COURSE_SLOT_ID } = ATTRIBUTES;
 
 const { CONFIG_DATA, LAST_NEW_THEME, CHOSEN_TIME_TYPE } = LOCAL_STORAGE_KEYS;
 
@@ -31,13 +31,16 @@ const {
     COURSE_DAY,
     COURSE_ROW,
     COURSE_ADD,
+    CURSOR_MOVE,
     COURSE_DAYS,
     COURSE_TIME,
     COURSE_SLOT,
     COURSE_TITLE,
     DISPLAY_NONE,
     COURSE_THEME,
-    COURSE_DELETE
+    DASHED_BORDER,
+    COURSE_DELETE,
+    COURSE_SLOT_DELETE
 } = CLASSES;
 
 const { HOUR_VALUE, MINUTE_VALUE, MERIDIAN_VALUE } = QUERIES;
@@ -46,6 +49,80 @@ const { year, month, hour12, minutes, monthDate, longDayOfWeek, longMonthName }:
     getDateProps();
 
 let addCourseClicked = false;
+let dragSourceCourseSlotID: string;
+
+function handleCourseSlotDragStart() {
+    this.style.opacity = '0.4';
+    dragSourceCourseSlotID = this.getAttribute(ATTR_COURSE_SLOT_ID);
+    const courseSlots = document.querySelectorAll<HTMLDivElement>(`.${COURSE_SLOT}`);
+    courseSlots.forEach(slot => addClass(slot, DASHED_BORDER));
+}
+
+function handleDragEnd() {
+    this.style.opacity = '1';
+    const courseSlots = document.querySelectorAll<HTMLDivElement>(`.${COURSE_SLOT}`);
+    courseSlots.forEach(slot => removeClass(slot, DASHED_BORDER));
+}
+
+function handleDragOver(e: Event): boolean {
+    e.preventDefault();
+    return false;
+}
+
+function handleCourseSlotDrop(e: Event): false | void {
+    const { ATTR_COURSE_SLOT_ID } = ATTRIBUTES;
+    const { CONFIG_DATA } = LOCAL_STORAGE_KEYS;
+
+    e.stopPropagation();
+
+    const dragDestinationCourseSlotID: string = this.getAttribute(ATTR_COURSE_SLOT_ID);
+    if (dragSourceCourseSlotID !== dragDestinationCourseSlotID) {
+        const sourceCourseSlot: HTMLDivElement = document.querySelector(
+            `[${ATTR_COURSE_SLOT_ID}="${dragSourceCourseSlotID}"]`
+        )!;
+        const destinationCourseSlot: HTMLDivElement = document.querySelector(
+            `[${ATTR_COURSE_SLOT_ID}="${dragDestinationCourseSlotID}"]`
+        )!;
+        const configData: ConfigData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+
+        if (!configData.timetable) return showAlert({ msg: 'An error has occured' });
+
+        let [sourceCourseSlotDayIndex, sourceCourseSlotIndex] = dragSourceCourseSlotID
+            .split('-', 2)
+            .map(Number);
+        let [destinationCourseSlotDayIndex, destinationCourseSlotIndex] =
+            dragDestinationCourseSlotID.split('-', 2).map(Number);
+
+        const tempCourse: string =
+            configData.timetable.tableRows[sourceCourseSlotDayIndex].courseUuids[
+                sourceCourseSlotIndex
+            ];
+        const tempCourseSlot: HTMLDivElement = sourceCourseSlot;
+
+        configData.timetable.tableRows[sourceCourseSlotDayIndex].courseUuids[
+            sourceCourseSlotIndex
+        ] =
+            configData.timetable.tableRows[destinationCourseSlotDayIndex].courseUuids[
+                destinationCourseSlotIndex
+            ];
+        sourceCourseSlot.style.background = destinationCourseSlot.style.background;
+        sourceCourseSlot.style.gridColumnStart = destinationCourseSlot.style.gridColumnStart;
+
+        configData.timetable.tableRows[destinationCourseSlotDayIndex].courseUuids[
+            destinationCourseSlotIndex
+        ] = tempCourse;
+        destinationCourseSlot.style.background = tempCourseSlot.style.background;
+        destinationCourseSlot.style.gridColumnStart = tempCourseSlot.style.gridColumnStart;
+
+        localStorage.setItem(CONFIG_DATA, JSON.stringify(configData));
+
+        // to update or reload timetable
+        reloadLastTimetable();
+        showAlert({ msg: 'Timetable updated' });
+    }
+
+    return false;
+}
 
 function emptyTable(selector: string) {
     const tableBody = document.querySelector<HTMLTableSectionElement>(selector);
@@ -164,10 +241,25 @@ function reloadLastTimetable() {
                 );
 
                 const course: HTMLDivElement = document.createElement('div');
-                addClass(course, COURSE_SLOT);
+
+                course.draggable = true;
+                addClass(course, COURSE_SLOT, CURSOR_MOVE);
+                course.setAttribute(ATTR_COURSE_SLOT_ID, `${i}-${j}`);
+                course.addEventListener('dragend', handleDragEnd);
+                course.addEventListener('dragover', handleDragOver);
+                course.addEventListener('drop', handleCourseSlotDrop);
+                course.addEventListener('dragstart', handleCourseSlotDragStart);
                 course.style.gridColumnStart = `${i + 2}`;
                 course.style.background = targetedCourse?.theme ?? 'transparent';
                 course.innerHTML = targetedCourse?.title ?? '';
+
+                if (targetedCourse?.title) {
+                    const deleteButton: HTMLButtonElement = document.createElement('button');
+                    deleteButton.onclick = () => deleteCourseSlot(i, j);
+                    addClass(deleteButton, COURSE_SLOT_DELETE);
+                    course.appendChild(deleteButton);
+                }
+
                 courseRow.appendChild(course);
             }
         });
@@ -565,6 +657,16 @@ function downloadTimetable() {
     if (timetable) {
         // @ts-ignore
         html2pdf(timetable);
+    }
+}
+
+function deleteCourseSlot(dayIndex: number, courseID: number) {
+    const configData: ConfigData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+    if (configData.timetable?.tableRows) {
+        configData.timetable.tableRows[dayIndex].courseUuids[courseID] = '';
+        localStorage.setItem(CONFIG_DATA, JSON.stringify(configData));
+        reloadLastTimetable();
+        showAlert({ msg: 'Timetable updated' });
     }
 }
 

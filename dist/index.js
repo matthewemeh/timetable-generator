@@ -1,12 +1,58 @@
 "use strict";
 const { PRIMARY } = COLORS;
-const { ATTR_THEME } = ATTRIBUTES;
+const { ATTR_THEME, ATTR_COURSE_SLOT_ID } = ATTRIBUTES;
 const { CONFIG_DATA, LAST_NEW_THEME, CHOSEN_TIME_TYPE } = LOCAL_STORAGE_KEYS;
 const { OVERLAY, TIMETABLE, INFO_TILE, TODAY_TEXT, COURSE_NAME, COURSE_LIST, NEW_END_TIME, EMPTY_COURSES, NEW_START_TIME, SETTINGS_CONFIG, COURSE_DURATION, COURSE_COLOR_INPUT, COURSE_COLOR_CONFIG } = IDs;
-const { TIME, MODAL, ACTIVE, COURSE, BUTTON, HIDDEN, PICKER, COURSE_DAY, COURSE_ROW, COURSE_ADD, COURSE_DAYS, COURSE_TIME, COURSE_SLOT, COURSE_TITLE, DISPLAY_NONE, COURSE_THEME, COURSE_DELETE } = CLASSES;
+const { TIME, MODAL, ACTIVE, COURSE, BUTTON, HIDDEN, PICKER, COURSE_DAY, COURSE_ROW, COURSE_ADD, CURSOR_MOVE, COURSE_DAYS, COURSE_TIME, COURSE_SLOT, COURSE_TITLE, DISPLAY_NONE, COURSE_THEME, DASHED_BORDER, COURSE_DELETE, COURSE_SLOT_DELETE } = CLASSES;
 const { HOUR_VALUE, MINUTE_VALUE, MERIDIAN_VALUE } = QUERIES;
 const { year, month, hour12, minutes, monthDate, longDayOfWeek, longMonthName } = getDateProps();
 let addCourseClicked = false;
+let dragSourceCourseSlotID;
+function handleCourseSlotDragStart() {
+    this.style.opacity = '0.4';
+    dragSourceCourseSlotID = this.getAttribute(ATTR_COURSE_SLOT_ID);
+    const courseSlots = document.querySelectorAll(`.${COURSE_SLOT}`);
+    courseSlots.forEach(slot => addClass(slot, DASHED_BORDER));
+}
+function handleDragEnd() {
+    this.style.opacity = '1';
+    const courseSlots = document.querySelectorAll(`.${COURSE_SLOT}`);
+    courseSlots.forEach(slot => removeClass(slot, DASHED_BORDER));
+}
+function handleDragOver(e) {
+    e.preventDefault();
+    return false;
+}
+function handleCourseSlotDrop(e) {
+    const { ATTR_COURSE_SLOT_ID } = ATTRIBUTES;
+    const { CONFIG_DATA } = LOCAL_STORAGE_KEYS;
+    e.stopPropagation();
+    const dragDestinationCourseSlotID = this.getAttribute(ATTR_COURSE_SLOT_ID);
+    if (dragSourceCourseSlotID !== dragDestinationCourseSlotID) {
+        const sourceCourseSlot = document.querySelector(`[${ATTR_COURSE_SLOT_ID}="${dragSourceCourseSlotID}"]`);
+        const destinationCourseSlot = document.querySelector(`[${ATTR_COURSE_SLOT_ID}="${dragDestinationCourseSlotID}"]`);
+        const configData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+        if (!configData.timetable)
+            return showAlert({ msg: 'An error has occured' });
+        let [sourceCourseSlotDayIndex, sourceCourseSlotIndex] = dragSourceCourseSlotID
+            .split('-', 2)
+            .map(Number);
+        let [destinationCourseSlotDayIndex, destinationCourseSlotIndex] = dragDestinationCourseSlotID.split('-', 2).map(Number);
+        const tempCourse = configData.timetable.tableRows[sourceCourseSlotDayIndex].courseUuids[sourceCourseSlotIndex];
+        const tempCourseSlot = sourceCourseSlot;
+        configData.timetable.tableRows[sourceCourseSlotDayIndex].courseUuids[sourceCourseSlotIndex] =
+            configData.timetable.tableRows[destinationCourseSlotDayIndex].courseUuids[destinationCourseSlotIndex];
+        sourceCourseSlot.style.background = destinationCourseSlot.style.background;
+        sourceCourseSlot.style.gridColumnStart = destinationCourseSlot.style.gridColumnStart;
+        configData.timetable.tableRows[destinationCourseSlotDayIndex].courseUuids[destinationCourseSlotIndex] = tempCourse;
+        destinationCourseSlot.style.background = tempCourseSlot.style.background;
+        destinationCourseSlot.style.gridColumnStart = tempCourseSlot.style.gridColumnStart;
+        localStorage.setItem(CONFIG_DATA, JSON.stringify(configData));
+        reloadLastTimetable();
+        showAlert({ msg: 'Timetable updated' });
+    }
+    return false;
+}
 function emptyTable(selector) {
     const tableBody = document.querySelector(selector);
     while (tableBody?.lastChild)
@@ -81,10 +127,22 @@ function reloadLastTimetable() {
             if (courseRow) {
                 const targetedCourse = courses.find(({ uuid }) => uuid === courseUuid);
                 const course = document.createElement('div');
-                addClass(course, COURSE_SLOT);
+                course.draggable = true;
+                addClass(course, COURSE_SLOT, CURSOR_MOVE);
+                course.setAttribute(ATTR_COURSE_SLOT_ID, `${i}-${j}`);
+                course.addEventListener('dragend', handleDragEnd);
+                course.addEventListener('dragover', handleDragOver);
+                course.addEventListener('drop', handleCourseSlotDrop);
+                course.addEventListener('dragstart', handleCourseSlotDragStart);
                 course.style.gridColumnStart = `${i + 2}`;
                 course.style.background = targetedCourse?.theme ?? 'transparent';
                 course.innerHTML = targetedCourse?.title ?? '';
+                if (targetedCourse?.title) {
+                    const deleteButton = document.createElement('button');
+                    deleteButton.onclick = () => deleteCourseSlot(i, j);
+                    addClass(deleteButton, COURSE_SLOT_DELETE);
+                    course.appendChild(deleteButton);
+                }
                 courseRow.appendChild(course);
             }
         });
@@ -388,6 +446,15 @@ function downloadTimetable() {
     const timetable = document.getElementById(TIMETABLE);
     if (timetable) {
         html2pdf(timetable);
+    }
+}
+function deleteCourseSlot(dayIndex, courseID) {
+    const configData = JSON.parse(localStorage.getItem(CONFIG_DATA) ?? '{}');
+    if (configData.timetable?.tableRows) {
+        configData.timetable.tableRows[dayIndex].courseUuids[courseID] = '';
+        localStorage.setItem(CONFIG_DATA, JSON.stringify(configData));
+        reloadLastTimetable();
+        showAlert({ msg: 'Timetable updated' });
     }
 }
 window.onload = () => {

@@ -10,13 +10,16 @@ const CLASSES = {
     COURSE_ADD: 'course-add',
     COURSE_ROW: 'course-row',
     COURSE_DAY: 'course-day',
+    CURSOR_MOVE: 'cursor-move',
     COURSE_DAYS: 'course-days',
     COURSE_SLOT: 'course-slot',
     COURSE_TIME: 'course-time',
     DISPLAY_NONE: 'display-none',
     COURSE_TITLE: 'course-title',
     COURSE_THEME: 'course-theme',
-    COURSE_DELETE: 'course-delete'
+    DASHED_BORDER: 'dashed-border',
+    COURSE_DELETE: 'course-delete',
+    COURSE_SLOT_DELETE: 'delete-course-slot-btn'
 };
 
 const IDs = {
@@ -46,7 +49,8 @@ const COLORS = {
 };
 
 const ATTRIBUTES = {
-    ATTR_THEME: 'data-theme'
+    ATTR_THEME: 'data-theme',
+    ATTR_COURSE_SLOT_ID: 'course-slot-id'
 };
 
 const LOCAL_STORAGE_KEYS = {
